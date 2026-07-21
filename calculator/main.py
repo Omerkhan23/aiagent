@@ -10,7 +10,8 @@ def main():
     if len(sys.argv) <= 1:
         print("Calculator App")
         print('Usage: python main.py "<expression>"')
-        print('Example: python main.py "3 + 5"')
+        print('Example: python main.py "3 + 5"')# space between digits is impoertant other error
+        # like "3 + 5" not "3+5"
         return
 
     expression = " ".join(sys.argv[1:])
