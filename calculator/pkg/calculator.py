@@ -48,7 +48,7 @@ class Calculator:
 
         return values[0]
 
-    def _apply_operator(self, operators, values):
+    def _apply_operator(self, operators: list[str], values: list[float]):
         if not operators:
             return
 

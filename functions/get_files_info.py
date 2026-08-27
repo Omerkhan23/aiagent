@@ -1,38 +1,35 @@
 import os
+
 from google.genai import types
 
-def get_files_info(working_directory , directory = '.'):
+def get_files_info(working_directory: str, directory: str = ".") -> str:
 
-    full_path = os.path.join(working_directory , directory)
+    #getting the absolute path of the working directory
+    absolute_path_WD = os.path.abspath(working_directory)
 
-    abs_full_path = os.path.abspath(full_path)
+    #joining it with the directory path to get the full path
+    target_dir = os.path.normpath(os.path.join(absolute_path_WD, directory))
 
-    working_directory = os.path.abspath(working_directory)
-
-    if not abs_full_path.startswith(working_directory + os.sep) and abs_full_path != working_directory:
-
-        return f'Error: Cannot list "{directory}" as it is outside the permitted working directory'
+    #checking whether commonpath is same for both WD and diectory
+    valid_target_dir = os.path.commonpath([absolute_path_WD,target_dir]) == absolute_path_WD
+    result = f"Result for '{directory}' directory:\n"
+    if not valid_target_dir:
+        return f'   Error: Cannot list "{directory}" as it is outside the permitted working directory'
+    # checking whethter the directory is directory not a file
+    elif not os.path.isdir(target_dir):
+        return f'   Error: "{directory}" is not a directory'
     
-    elif not os.path.isdir(abs_full_path):
-
-        return f'Error: "{directory}" is not a directory'
-
     else:
-
-        file_path = os.listdir(abs_full_path)
-
-        result = f"Result for current directory:\n"
-
-        for filename in file_path:
-            complete_filepath = os.path.join(abs_full_path,filename)
-            file_size = os.path.getsize(complete_filepath)
-            is_dir  = os.path.isdir(complete_filepath)
-
-            result += f" - {filename}: file_size={file_size} bytes,is_dir={is_dir}\n"
+        target_dir_items = os.listdir(target_dir)
+        
+        for item in target_dir_items:
+            item_path = os.path.normpath(os.path.join(target_dir,item))
+        
+            result += f"   - {item}: file_size={os.path.getsize(item_path)}, is_dir={os.path.isdir(item_path)}\n"
 
         return result.strip()
-
     
+#schema to define the the function for LLM 
 schema_get_files_info = types.FunctionDeclaration(
     name="get_files_info",
     description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
@@ -48,3 +45,9 @@ schema_get_files_info = types.FunctionDeclaration(
 )
 
     
+
+
+
+    
+
+
